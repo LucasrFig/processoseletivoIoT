@@ -1,349 +1,145 @@
 # Processo Seletivo – Intensivo Maker | IoT
 
-## Etapa Prática – Sistemas Embarcados
-
-Bem-vindo(a) à **etapa prática do processo seletivo para o Intensivo Maker | IoT**.
-
-Esta atividade tem como objetivo avaliar suas competências em **Sistemas Embarcados**, com foco em **organização de projeto, lógica de firmware e simulação de hardware**, a partir da aplicação prática dos conhecimentos adquiridos nos cursos EAD da etapa anterior.
-
-> **Objetivo principal**  
-> Avaliar sua capacidade de **planejar, estruturar e desenvolver** uma solução funcional de sistemas embarcados, seguindo boas práticas de engenharia.
-
----
-
-## Antes de Tudo
-
-Se você **nunca utilizou Git ou GitHub**, não se preocupe.  
-Siga atentamente os passos abaixo.
-
----
-
-### 1 - Criação de Conta no GitHub
-
-1. Acesse: <https://github.com>
-2. Clique em **Sign up**
-3. Crie sua conta gratuita seguindo as instruções da plataforma
-
-> O GitHub será utilizado para:
->
-> - Envio do seu projeto
-> - Versionamento do código
-> - Correção e validação automática via GitHub Actions
-
----
-
-### 2 - Instalação do Git
-
-O **Git** é a ferramenta responsável pelo controle de versões do seu código.
-
-### Windows
-
-Baixe e instale o **Git Bash**:  
-<https://git-scm.com/downloads>
-
-### Linux / macOS
-
-Verifique se o Git já está instalado:
-
-```bash
-git --version
-```
-
-> Caso não esteja, instale pelo gerenciador de pacotes do seu sistema.
-
-## Preparando o Ambiente
-
-Para desenvolver o desafio, você deverá criar uma cópia deste repositório no seu GitHub.
-
-### 1 - Fork do Repositório
-
-No canto superior direito desta página, clique em Fork
-
-<img width="219" height="45" alt="image" src="https://github.com/user-attachments/assets/5d629626-513a-445c-ba0f-e5bb3e225187" />
-
-Uma cópia do repositório será criada no seu perfil do GitHub
-
-> O Fork permite que você trabalhe de forma independente, sem alterar o repositório original do processo seletivo.
-
-### 2 - Clone do Repositório
-
-No repositório do seu Fork, clique em **<> Code**
-
-<img width="149" height="52" alt="image" src="https://github.com/user-attachments/assets/abbd331b-a005-4633-89c6-afd16acbe828" />
-
-Copie a URL e execute no terminal:
-
-```bash
-git clone https://github.com/SEU_USUARIO/nome-do-repositorio.git
-cd nome-do-repositorio
-```
-
-> O comando git clone cria uma cópia local do repositório para desenvolvimento.
-
-### 3 - Preparação do Ambiente de Execução
-
-Você pode executar o projeto de duas formas. Escolha apenas uma.
-
-#### Opção A – Ambiente Python Local
-
-**Requisitos:**
-
-- Python 3.10 ou 3.11
-- pip
-
-**Instale as dependências:**
-
-```bash
-pip install -r requirements.txt
-```
-
-#### Opção B – Dev Container (Recomendado)
-
-Este repositório inclui um Dev Container, garantindo um ambiente padronizado.
-
-**Requisitos:**
-
-- VS Code
-- Docker instalado
-- Extensão Dev Containers
-
-**Passos:**
-
-1. Abra o repositório no VS Code
-2. Clique em “Reopen in Container”
-3. Aguarde a criação automática do ambiente
-
-> Todas as dependências serão instaladas automaticamente.
-
-## Criando sua API Key do Wokwi
-
-A simulação do projeto será executada automaticamente via GitHub Actions, utilizando o Wokwi CLI.
-
-Para isso, você precisa gerar uma API Key.
-
-1. Acesse: <https://wokwi.com/dashboard/ci>
-2. Faça login (Google ou GitHub)
-3. Clique em Generate API Token
-4. Copie a chave gerada (exemplo: wokwi-xxxxxxxx)
-
-> Importante
-
-- Nunca faça commit dessa chave
-- Ela deve ser armazenada apenas como secret no GitHub
-
-## Configurando a API Key no GitHub (Secrets)
-
-**No repositório do seu Fork:**
-
-1. Vá em Settings
-2. Acesse Secrets and variables → Actions
-3. Clique em New repository secret
-4. Nome: WOKWI_CLI_TOKEN
-5. Valor: sua chave gerada
-6. Salve
-
-> As GitHub Actions do template já estão preparadas para usar essa variável automaticamente.
-
-## Desafio Técnico
-
-Você deverá desenvolver um projeto de sistemas embarcados simulados, utilizando Python e Wokwi.
-
-### Estrutura mínima esperada
-
-```text
-/project
- ├── src/
- │   └── main.py        # Código principal do projeto
- ├── wokwi.toml         # Configuração da simulação
- ├── diagram.json       # Circuito no Wokwi
- └── README.md          # Explicação do seu projeto
-```
-
-> Você pode expandir essa estrutura se desejar, desde que mantenha os arquivos essenciais.
-
-### Escolha do cenário
-
-No diretório "scenarios" existem arquivos .md e pastas referentes a diferentes desafios. Selecione apenas um deles e mantenha apenas a pasta e .md referente ao desafio a ser desenvolvido, deletando os demais. Isso fará com o que o fluxo de testes automáticos selecione o fluxo de acordo com o desafio escolhido.
-
-### Como Desenvolver seu Projeto
-
-O desenvolvimento acontece principalmente nos arquivos abaixo:
-
-#### src/main.py
-
-- Código Python executado na simulação
-- Implementa a lógica do sistema embarcado
-- Exemplos: controle de LEDs, leitura de sensores, estados, temporizações, etc.
-
-#### diagram.json
-
-- Define o hardware virtual do projeto
-- Componentes como:
-  - LEDs
-  - Botões
-  - Sensores
-  - Placa microcontroladora
-
-#### wokwi.toml
-
-- Configura a simulação:
-  - Tipo de placa
-  - Framework
-  - Dependências adicionais
- 
-#### Rodando localmente
-
-Para executar o seu projeto locamente, é necesário preparar a imagem docker local, e após isso
-utiliza-la para gerar o arquivo que conterá o seu código para o projeto, para isso, execute os 
-seguintes códigos:
-
-1. Prepara a imagem docker (Necessário rodar apenas 1 vez)
-
-```bash
-docker build -t esp32-builder -f Dockerfile .
-```
-
-2. Prepara o arquivo de memória fs.bin (Necessário a cada iteração)
-
-```bash
-docker run --rm -v "$(pwd)/src:/mnt/src" -v "$(pwd):/mnt/out" esp32-builder bash -c "mkdir -p /tmp/fs && cp -r /mnt/src/* /tmp/fs/ && /mklittlefs/mklittlefs -c /tmp/fs -b 4096 -p 256 -s 0x200000 /mnt/out/fs.bin"
-```
-
-#### Commit e Push
-
-Após suas alterações:
-
-```bash
-git add .
-git commit -m "Descrição clara do que foi feito"
-git push
-```
-
-### Execução Automática (GitHub Actions)
-
-A cada push, o GitHub Actions irá automaticamente:
-
-- Executar o pipeline de build
-- Rodar a simulação via Wokwi CLI
-- Validar que o projeto executa sem erros
-
-### Caso algo falhe
-
-- Vá até a aba Actions
-- Analise os logs da execução
-- Corrija e envie novamente
-
-## Critérios de Avaliação
-
-Esta etapa será avaliada considerando:
-
-- Funcionamento correto da simulação
-- Código organizado e legível
-- Estrutura de arquivos correta
-- Uso adequado do Wokwi
-- Commits claros e bem descritos
-- Projeto executando sem falhas nas Actions
-
----
-
-## Submissão Final
-
-Após concluir o desenvolvimento:
-
-1. Verifique se o projeto **executa sem erros** nas GitHub Actions
-2. Confirme que todos os arquivos obrigatórios estão presentes
-3. Copie o link do **seu repositório no GitHub**
-
-Envie o link conforme as orientações do processo seletivo na plataforma do **PNAAT**.
-
 ---
 
 ## Relatório do Candidato
 
-O arquivo **`README.md` do seu repositório** deve ser utilizado como o  
-**relatório final do desafio técnico**.
-
-Preencha todas as seções abaixo de forma **clara, objetiva e técnica**.
-
-> **Dica importante**  
-> Não é necessário um relatório extenso.  
-> O principal critério é demonstrar **clareza nas decisões técnicas**, organização e entendimento do sistema embarcado desenvolvido.
-> Não mantenha os demais conteúdos escritos nesse arquivo README, aqui devem ser concentradas apenas informações referentes ao projeto desenvolvido.
-
----
-
 ### Identificação do Candidato
 
-- **Nome completo:**
-- **GitHub:**
+- **Nome completo:** Lucas Ricardo de Lima Figueiredo
+- **GitHub:** https://github.com/LucasrFig 
 
 ---
 
 ## Visão Geral da Solução
 
-Descreva, em poucas palavras:
+O objetivo do projeto é criar um sistema que monitore ambientes sensíveis (Ex: Refrigeradores, estufas, laboratórios, etc.). O sistema embarcado deve gerar alertas para as seguintes situações:
+- Grandes mudanças na temperatura
+- Porta aberta por mais de 5 segundos
+  
+Na simulação, a abertura da porta é representada por um botão. Se estiver pressionado, a porta está fechada; se estiver solto, a porta está aberta. Caso o botão permaneça solto por mais de 5 segundos, uma mensagem é apresentada no terminal informando que a porta está aberta há muito tempo. 
 
-- Qual é o objetivo do seu projeto
-- O que o sistema embarcado simulado faz
-- Como o usuário interage com ele (se aplicável)
+O sensor de temperatura utilizado na simulação é o MPU6050. No início do programa, é salva a temperatura base com a porta fechada. A partir desse momento, o sistema monitora a variação da temperatura constantemente. Caso identifique uma variação além do limite estabelecido, o microcontrolador apresenta uma mensagem alertando sobre a degradação térmica.
+
+As únicas interações da simulação com o usuário são o pressionar do botão (simulando o fechamento e a abertura da porta) e a alteração do valor do sensor de temperatura. A resposta do sistema sempre se dará através de mensagens no terminal.
 
 ---
 
 ## Arquitetura do Sistema Embarcado
 
-Explique a arquitetura lógica do seu projeto, abordando:
+O sistema foi construído com uma arquitetura de laço de repetição contínuo com gestão de estados não-bloqueante. Isso garante que o microcontrolador consiga monitorar múltiplos sensores simultaneamente sem que um atrase o outro.
 
-- Fluxo principal do programa (`main.py`)
-- Estrutura de estados, loops ou temporizações
-- Como os componentes interagem entre si
+### Diagrama de Fluxo Simplificado
 
-Se desejar, utilize tópicos ou um pequeno diagrama em texto.
+```text
+[Ligar/Reset] 
+      │
+      ⬇
+(Setup de Hardware) ──> Configura Pinos do botão e Barramento I2C (MPU6050)
+      │
+      ⬇
+(Bloqueio de Segurança) ──> Para aguardar o sensor estabilizar e captura a Temperatura Base Inicial
+      │
+      ⬇
+[Loop Principal de Monitoramento]
+      │
+      ├──> 1. Ler Sensores: Captura estado da porta e temperatura atual.
+      │
+      ├──> 2. Lógica da Porta: Porta aberta? 
+      │       ├── Sim: Conta tempo. Passou de 5s? -> DISPARA ALARME PORTA.
+      │       └── Não: Zera cronômetro da porta.
+      │
+      ├──> 3. Lógica Térmica: Variação de temperatura >= 3°C?
+      │       ├── Sim: -> DISPARA ALARME TÉRMICO.
+      │       └── Não: Se porta fechada, atualiza temperatura base (adaptação ao ambiente).
+      │
+      └──> 4. Normalização: O sistema estava em alarme?
+              ├── Sim: Condições estão seguras há mais de 1 segundo? -> ZERA ALARMES. 
+              └── Não: Mantém estado atual.
+```
 
+### Interação entre Componentes
+A comunicação entre o hardware e o software acontece de duas formas distintas:
+* **Entrada Digital (Botão/Porta):** O pino do botão é configurado com um resistor interno de `PULL_DOWN`. Quando a porta está fechada, o circuito é ativado, enviando nível lógico `1`. Quando aberta, envia `0`.
+* **Comunicação I2C (Sensor MPU6050):** O ESP32 atua como *Mestre* no barramento I2C, enviando requisições aos registradores de memória do sensor (endereço `0x68`) para ler os bytes brutos do termômetro embutido, que são então convertidos para graus Celsius via software.
+
+### Fluxo Principal do Programa `main.py`
+O código está dividido em duas fases principais:
+1. **Fase de Inicialização (Setup):** O microcontrolador acorda os periféricos e entra em uma barreira de segurança `while temp_referencia is None`. O sistema se recusa a iniciar o monitoramento até que o sensor I2C retorne uma leitura real e válida, evitando falsos positivos causados pelo atraso de inicialização do hardware.
+2. **Fase de Execução (Main Loop):** Um laço `while True` que atua como o coração do sistema, rodando ininterruptamente para ler as variáveis e enviar as mensagens para o terminal, caso necessário.
+
+### Gestão de Estados e Temporização
+O projeto evita propositalmente o uso de funções bloqueantes, como longos `sleep()`, para a gestão dos alarmes. Em vez disso, utiliza a contagem de tempo do processador `ticks_ms` para gerenciar eventos simultâneos:
+
+* **Concorrência:** Ao salvar a "marca temporal" de quando a porta foi aberta (`tempo_abertura_inicio`), o sistema subtrai esse valor do tempo atual para saber quantos milissegundos se passaram. Isso permite que o ESP32 continue monitorando a temperatura enquanto o tempo da porta esgota.
+* **Referência Adaptativa:** A temperatura não é comparada a um valor fixo, mas sim a uma `temp_referencia` dinâmica. Se o ambiente esfriar naturalmente, o sistema atualiza essa referência. O alarme só soa em caso de saltos bruscos.
+* **Debounce de Normalização:** Para evitar que o sistema declare normalização falsa (ex: uma batida rápida na porta), foi implementada uma trava de tempo. O sistema só se declara normalizado e limpa as variáveis de erro se as leituras físicas se mantiverem seguras por um tempo contínuo predeterminado (1000 ms).
+* **Pausa do Processador:** Um pequeno `sleep(0.05)` no final do loop garante que o processador pare por um momento, economizando energia e garantindo a estabilidade da leitura do sensor sem engasgos.
 ---
 
 ## Componentes Utilizados na Simulação
 
-Liste os principais componentes definidos no `diagram.json`, por exemplo:
+O hardware virtual foi montado no simulador Wokwi utilizando os seguintes componentes (mapeados no arquivo `diagram.json`):
 
-- Tipo de placa utilizada
-- LEDs, botões, sensores, atuadores, etc.
-- Função de cada componente no sistema
+* **Microcontrolador (ESP32 DevKit V4):**
+  * **Função:** Atua como o cérebro central do sistema. Roda o firmware em MicroPython, gerencia o relógio interno para a temporização, processa as leituras periféricas e executa a máquina de estados que dispara ou silencia os alarmes via terminal.
+    
+<div align="center">
+  <img width="412" height="396" alt="image" src="https://github.com/user-attachments/assets/0da6585f-feaf-44f5-8c36-65b318b397f4" />
+</div>
+
+* **Sensor MPU6050 (Módulo I2C):**
+  * **Função:** Além de ser um giroscópio e acelerômetro de 6 eixos, neste projeto ele é utilizado especificamente para explorar o seu **termômetro digital interno**. Ele se comunica com o ESP32 através do protocolo I2C (Pinos SDA 21 e SCL 22), fornecendo as leituras brutas necessárias para o cálculo do gradiente térmico.
+
+<div align="center">
+  <img width="447" height="406" alt="image" src="https://github.com/user-attachments/assets/1d9446c3-a62a-4a24-8f9c-443df58d3643" />
+</div>
+
+* **Botão (Pushbutton - `btn1`):**
+  * **Função:** Simula o comportamento de um interruptor magnético ou "chave fim de curso" acoplada à porta ou tampa do compartimento monitorado. Ligado ao pino 4 (com resistor de `PULL_DOWN` interno), ele injeta nível lógico `1` quando pressionado (simulando a porta fechada/vedada) e nível lógico `0` quando solto (iniciando a contagem de violação de exposição).
+
+<div align="center">
+  <img width="436" height="389" alt="image" src="https://github.com/user-attachments/assets/24832004-0ef7-444d-a0d2-07c6f3f20674" />
+</div>
 
 ---
 
 ## Decisões Técnicas Relevantes
+  
+As decisões de arquitetura foram:
 
-Explique brevemente decisões importantes tomadas durante o desenvolvimento, como:
-
-- Organização do código
-- Uso de funções, estados ou constantes
-- Estratégias para temporização ou controle lógico
-
+* **Parametrização Centralizada:** A definição de limites críticos no início do arquivo (como `LIMITE_TEMPO_X` e `LIMITE_VARIACAO_Y` configurados em constantes) evita codar os valores diretamente no código. Isso permite que os parâmetros do sistema sejam ajustados rapidamente para diferentes ambientes de negócio sem alterar a estrutura da lógica principal.
+* **Temporização Não-Bloqueante:** Para permitir a concorrência real das tarefas, o controle de tempo foi feito utilizando `ticks_ms()` e `ticks_diff()`. O uso do `sleep()` foi evitado na contagem de alarmes para garantir que o microcontrolador monitore a temperatura e o estado da porta simultaneamente, sem interrupções.
+* **Máquina de Estados Simples:** A utilização de `flags` de estado, como `alarme_porta_ativo` e `alarme_temp_ativo`, garante que o sistema atue por gatilhos de transição. Isso impede que o terminal seja inundado com alertas repetidos enquanto a condição de falha persistir.
+* **Tratamento de Hardware e *Debounce*:**
+  * **Wake-up do Sensor:** Adição de um bloqueio lógico na inicialização para garantir que o sistema só inicie após o MPU6050 estabilizar.
+  * **Debounce de Normalização:** Implementação de uma trava de tempo (`ATRASO_NORMALIZACAO`) que exige 1 segundo contínuo de leituras seguras antes de declarar a normalização, mitigando falsos positivos causados por oscilações mecânicas da porta.
+* **Referência Térmica Adaptativa:** A captura de temperatura não é comparada a um teto fixo. A variável `temp_referencia` foi desenhada para acompanhar o resfriamento natural do ambiente, disparando o alarme apenas caso ocorra o salto térmico brusco.
 ---
 
 ## Resultados Obtidos
 
-Descreva o comportamento final do sistema:
+### Requisitos atendidos:
+De modo geral, o sistema atende aos requisitos do processo seletivo:
+- A porta não pode ficar aberta por mais de 5 segundos, senão, o alerta é disparado. Caso ela se feche, o sistema registra que a porta está em estado normal.
+- A temperatura não pode sofrer elevações abruptas, senão, o alerta é disparado. Caso ela volte ao nível estável, o sistema  registra que a temperatura está em um nível normal.
+- Caso ambas estejam em estado normal, e isso se mantenha durante 1 segundo, o sistema informa a normalização (Para evitar falsas leituras: como a porta batendo e abrindo novamente ou a temperatura oscilando demais).
 
-- O que funciona corretamente
-- Quais requisitos foram atendidos
-- Resultado observado na simulação do Wokwi
+### Simulação do Wokwi
+<div align="center">
+<img width="439" height="386" alt="image" src="https://github.com/user-attachments/assets/3042be84-535b-4a71-b947-1ec63e607ef0" />
+</div>
+
+A simulação funcionou corretamente, todas as mensagens solicitadas no README.md do projeto foram apresentadas no momento certo. Nenhum problema de interação com a simulação.
 
 ---
 
 ## Comentários Adicionais (Opcional)
 
-Utilize este espaço para comentar, se desejar:
+Primeiramente queria falar dos aprendizados. Pela primeira vez programei em MicroPython, já tinha tido contato durante os cursos, mas montar o projeto inteiro em MicroPython foi uma experiência interessante. Implementar diretamente a leitura do dispositivo `MPU6050` foi um desafio, não quis usar a biblioteca inteira do `MPU6050` somente para usar a função de ler temperatura, fui atrás de outros repositórios que implementavam esse processo de leitura via I2C e utilizei o que aprendi na função `ler_temperatura()` em meu código.
 
-- Dificuldades encontradas
-- Limitações da solução
-- Melhorias que você faria com mais tempo
-- Principais aprendizados durante o desafio
+Quanto a melhorias, eu não tive muito tempo para me dedicar aos projetos do processo seletivo com mais persistência devido a outros projetos pessoais concomitantes, mas com mais tempo eu com certeza adicionaria um sistema de histórico à solução, com registros de tempo automáticos de cada evento (Porta aberta, Porta fechada, Pico de temperatura), desse modo é muito mais fácil para um ser humano monitorar a operação do sistema embarcado. Outra adição interessante é o registro da temperatura do ambiente ao longo do tempo.
 
----
-
-> Este relatório faz parte da avaliação técnica.  
-> Clareza, objetividade e organização são tão importantes quanto o funcionamento do código.
 
 ---
 
