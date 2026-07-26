@@ -55,12 +55,20 @@ except Exception:
 # =========================================================
 # 4. Inicialização do Sistema (Item A do Escopo)
 # =========================================================
+# BLOQUEIO DE SEGURANÇA: Só inicia após ler uma temperatura válida
+temp_referencia = None
+while temp_referencia is None:
+    t = ler_temperatura(i2c)
+    if t == t:  # Truque no Python: NaN nunca é igual a ele mesmo. Se for igual, é um número válido!
+        temp_referencia = t
+    sleep(0.05)
+
+# Agora sim, com a referência salva corretamente, liberamos o robô do CI para agir
 print("Sistema de Monitoramento Inicializado")
 
 # Variáveis de Estado
 tempo_abertura_inicio = None
-temp_referencia = None
-tempo_normalizacao = None 
+tempo_normalizacao = None
 
 alarme_porta_ativo = False
 alarme_temp_ativo = False
@@ -71,10 +79,6 @@ alarme_temp_ativo = False
 while True:
     estado_porta = botao.value()  # 1 = Fechada, 0 = Aberta
     temperatura_atual = ler_temperatura(i2c)
-
-    # Define a temperatura de referência inicial se ainda não estiver definida
-    if temp_referencia is None and temperatura_atual == temperatura_atual:
-        temp_referencia = temperatura_atual
 
     # -----------------------------------------------------
     # B. Lógica de Tempo de Porta Aberta (Limite X)
@@ -93,7 +97,7 @@ while True:
     # -----------------------------------------------------
     # C. Lógica de Elevação Térmica (Variação Y)
     # -----------------------------------------------------
-    if temp_referencia is not None and temperatura_atual == temperatura_atual:
+    if temperatura_atual == temperatura_atual: # Se a leitura atual for válida
         delta_t = temperatura_atual - temp_referencia
 
         if delta_t >= LIMITE_VARIACAO_Y and not alarme_temp_ativo:
@@ -103,9 +107,10 @@ while True:
     # -----------------------------------------------------
     # D. Lógica de Normalização e Restauração de Estado
     # -----------------------------------------------------
+    # Se o sistema estava em alarme e AMBAS as condições voltaram aos limites seguros
     if alarme_porta_ativo or alarme_temp_ativo:
         condicao_porta_ok = (estado_porta == 1)
-        condicao_temp_ok = (temp_referencia is not None and (temperatura_atual - temp_referencia) < LIMITE_VARIACAO_Y)
+        condicao_temp_ok = ((temperatura_atual - temp_referencia) < LIMITE_VARIACAO_Y)
 
         if condicao_porta_ok and condicao_temp_ok:
             if tempo_normalizacao is None:
@@ -122,5 +127,5 @@ while True:
             # Se as condições deixarem de ser seguras antes de 1s, zera o cronômetro
             tempo_normalizacao = None
 
-    # Pequena pausa não-bloqueante de 50ms para precisão de tempo do CI
+    # Pequena pausa não-bloqueante de 50ms para precisão de tempo
     sleep(0.05)
