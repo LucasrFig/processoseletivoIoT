@@ -4,14 +4,14 @@
   "author": "Me",
   "editor": "wokwi",
   "parts": [
-    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 19.2, "left": 33.64, "attrs": {} },
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 19.2, "left": 33.64, "attrs": {"env": "micropython-20231227-v1.22.0"} },
     {
       "type": "wokwi-mpu6050",
       "id": "imu1",
       "top": 22.42,
       "left": -104.12,
       "rotate": 90,
-      "attrs": {"env": "micropython-20231227-v1.22.0"}
+      "attrs": {}
     },
     {
       "type": "wokwi-pushbutton",

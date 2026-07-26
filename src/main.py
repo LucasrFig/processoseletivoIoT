@@ -91,17 +91,18 @@ while True:
     # -----------------------------------------------------
     # C. Lógica de Elevação Térmica (Variação Y)
     # -----------------------------------------------------
+  # -----------------------------------------------------
+    # C. Lógica de Elevação Térmica (Variação Y)
+    # -----------------------------------------------------
     if temp_referencia is not None and temperatura_atual == temperatura_atual:
-        # Atualiza a referência continuamente enquanto a porta estiver fechada e sem alarme térmico
-        if estado_porta == 1 and not alarme_temp_ativo:
-            temp_referencia = temperatura_atual
-
+        
+        # Calcula a diferença com base na referência salva na inicialização/normalização
         delta_t = temperatura_atual - temp_referencia
 
         if delta_t >= LIMITE_VARIACAO_Y and not alarme_temp_ativo:
             alarme_temp_ativo = True
             print("ALERTA: Degradacao termica detectada!")
-
+            
     # -----------------------------------------------------
     # D. Lógica de Normalização e Restauração de Estado
     # -----------------------------------------------------
