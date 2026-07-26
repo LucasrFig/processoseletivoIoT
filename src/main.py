@@ -6,6 +6,7 @@ from time import sleep, ticks_ms, ticks_diff
 # =========================================================
 LIMITE_TEMPO_X = 5000       # Tempo limite de porta aberta (5000 ms = 5s)
 LIMITE_VARIACAO_Y = 3.0     # Variação máxima de temperatura (Delta T em °C)
+ATRASO_NORMALIZACAO = 1000  # Tempo estabilização para o CI (1000 ms = 1s)
 
 MPU_ADDR = 0x68             # Endereço I2C padrão do MPU6050
 PWR_MGMT_1 = 0x6B           # Registrador de energia
@@ -59,6 +60,7 @@ print("Sistema de Monitoramento Inicializado")
 # Variáveis de Estado
 tempo_abertura_inicio = None
 temp_referencia = None
+tempo_normalizacao = None 
 
 alarme_porta_ativo = False
 alarme_temp_ativo = False
@@ -71,7 +73,7 @@ while True:
     temperatura_atual = ler_temperatura(i2c)
 
     # Define a temperatura de referência inicial se ainda não estiver definida
-    if temp_referencia is None and temperatura_atual == temperatura_atual: # (Garante que não é NaN)
+    if temp_referencia is None and temperatura_atual == temperatura_atual:
         temp_referencia = temperatura_atual
 
     # -----------------------------------------------------
@@ -91,12 +93,7 @@ while True:
     # -----------------------------------------------------
     # C. Lógica de Elevação Térmica (Variação Y)
     # -----------------------------------------------------
-  # -----------------------------------------------------
-    # C. Lógica de Elevação Térmica (Variação Y)
-    # -----------------------------------------------------
     if temp_referencia is not None and temperatura_atual == temperatura_atual:
-        
-        # Calcula a diferença com base na referência salva na inicialização/normalização
         delta_t = temperatura_atual - temp_referencia
 
         if delta_t >= LIMITE_VARIACAO_Y and not alarme_temp_ativo:
@@ -106,17 +103,24 @@ while True:
     # -----------------------------------------------------
     # D. Lógica de Normalização e Restauração de Estado
     # -----------------------------------------------------
-    # Se o sistema estava em alarme e AMBAS as condições voltaram aos limites seguros
     if alarme_porta_ativo or alarme_temp_ativo:
         condicao_porta_ok = (estado_porta == 1)
         condicao_temp_ok = (temp_referencia is not None and (temperatura_atual - temp_referencia) < LIMITE_VARIACAO_Y)
 
         if condicao_porta_ok and condicao_temp_ok:
-            alarme_porta_ativo = False
-            alarme_temp_ativo = False
-            # Atualiza a referência de temperatura para a nova condição normalizada
-            temp_referencia = temperatura_atual
-            print("Status: Sistema Normalizado.")
+            if tempo_normalizacao is None:
+                # Inicia o cronômetro de estabilização
+                tempo_normalizacao = ticks_ms()
+            elif ticks_diff(ticks_ms(), tempo_normalizacao) >= ATRASO_NORMALIZACAO:
+                # Normaliza apenas após 1 segundo contínuo seguro
+                alarme_porta_ativo = False
+                alarme_temp_ativo = False
+                temp_referencia = temperatura_atual
+                tempo_normalizacao = None
+                print("Status: Sistema Normalizado.")
+        else:
+            # Se as condições deixarem de ser seguras antes de 1s, zera o cronômetro
+            tempo_normalizacao = None
 
     # Pequena pausa não-bloqueante de 50ms para precisão de tempo do CI
     sleep(0.05)
